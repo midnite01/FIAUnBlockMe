@@ -376,7 +376,8 @@ def choose_algorithm(screen, fonts):
         "A*: h = #bloqueadores + 1 (admisible).",
         "BFS: capa a capa; DFS: profundidad; UCS: óptimo con costo uniforme.",
         "Luego usa: Resolver, Paso, Auto, Reiniciar, Menú.",
-        "Código realizado por Gabriel y Sergio"
+        "Código realizado por Gabriel y Sergio.",
+        "Código usado de Irene Zuccar Parrini (A* en python).",
     ]
 
     while True:

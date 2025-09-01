@@ -456,7 +456,7 @@ def main():
 
     def solve_with_algorithm(name, start_state):
         t0 = time.perf_counter()
-        if name == "ASTAR":
+        if name == "A*":
             sol, exp = astar(start_state)
         elif name == "BFS":
             sol, exp = bfs(start_state)
@@ -477,7 +477,7 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     selected_alg = "ASTAR"
-                    buttons['solve'].text = 'Resolver ASTAR'
+                    buttons['solve'].text = 'Resolver A*'
                 elif event.key == pygame.K_2:
                     selected_alg = "BFS"
                     buttons['solve'].text = 'Resolver BFS'

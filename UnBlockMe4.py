@@ -384,7 +384,7 @@ def choose_algorithm(screen, fonts):
                 pos = ev.pos
                 for i, b in enumerate(buttons):
                     if b.hit(pos):
-                        return ["ASTAR", "BFS", "DFS", "UCS"][i]
+                        return ["A*", "BFS", "DFS", "UCS"][i]
 
         screen.blit(overlay, (0, 0))
         overlay.blit(title, title.get_rect(center=(WIDTH//2, 80)))
@@ -434,7 +434,7 @@ def main():
         'step':  Button((gap*2 + btn_w, yb, btn_w, btn_h), 'Paso ▶'),
         'auto':  Button((gap*3 + btn_w*2, yb, btn_w, btn_h), 'Auto ▶▶'),
         'reset': Button((gap*4 + btn_w*3, yb, btn_w, btn_h), 'Reiniciar'),
-        'menu':  Button((gap, yb + btn_h + 8, btn_w, btn_h), 'Menú algoritmos'),
+        'menu':  Button((gap, yb + btn_h + 8, btn_w, btn_h), 'Menú'),
     }
 
     # Solver/animación

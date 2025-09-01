@@ -353,7 +353,7 @@ def choose_algorithm(screen, fonts):
     bg, bg_pos = load_background("fondo.jpg", (WIDTH, HEIGHT))
 
     overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)  # transparente
-    overlay.fill((255, 255, 255, 180))  # un velo blanco semitransparente opcional
+    overlay.fill((255, 255, 255, 100))  # un velo blanco semitransparente opcional
     pygame.draw.rect(overlay, GREY, (40, 40, WIDTH-80, HEIGHT-80), width=2, border_radius=16)
 
     title = font_title.render("Unblock Me", True, DARK)

@@ -373,7 +373,8 @@ def choose_algorithm(screen, fonts):
         "Costo uniforme para todos: 1 por transición.",
         "A*: h = #bloqueadores + 1 (admisible).",
         "BFS: capa a capa; DFS: profundidad; UCS: óptimo con costo uniforme.",
-        "Luego usa: Resolver, Paso, Auto, Reiniciar, Menú."
+        "Luego usa: Resolver, Paso, Auto, Reiniciar, Menú.",
+        "Código realizado por Gabriel y Sergio"
     ]
 
     while True:

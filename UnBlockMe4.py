@@ -350,11 +350,13 @@ def init_level_meta():
 # ---------------- Menú de selección de algoritmo ----------------
 def choose_algorithm(screen, fonts):
     font_title, font, font_small = fonts
-    overlay = pygame.Surface((WIDTH, HEIGHT))
-    overlay.fill(PALE)
+    bg, bg_pos = load_background("fondo.jpg", (WIDTH, HEIGHT))
+
+    overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)  # transparente
+    overlay.fill((255, 255, 255, 180))  # un velo blanco semitransparente opcional
     pygame.draw.rect(overlay, GREY, (40, 40, WIDTH-80, HEIGHT-80), width=2, border_radius=16)
 
-    title = font_title.render("Elige el algoritmo de resolución", True, DARK)
+    title = font_title.render("Unblock Me", True, DARK)
     subtitle = font.render("Compara tiempo, nodos expandidos y nº de movimientos.", True, DARK)
 
     labels = ["A* (Informado)", "BFS (No informado)", "DFS (No informado)", "UCS (Costo uniforme)"]
@@ -387,7 +389,8 @@ def choose_algorithm(screen, fonts):
                     if b.hit(pos):
                         return ["A*", "BFS", "DFS", "UCS"][i]
 
-        screen.blit(overlay, (0, 0))
+        screen.blit(bg, bg_pos)         # fondo adaptado
+        screen.blit(overlay, (0, 0))    # velo encima
         overlay.blit(title, title.get_rect(center=(WIDTH//2, 80)))
         overlay.blit(subtitle, subtitle.get_rect(center=(WIDTH//2, 110)))
 
@@ -401,6 +404,24 @@ def choose_algorithm(screen, fonts):
             yinfo += 22
 
         pygame.display.flip()
+
+def load_background(path, target_size):
+    """Carga y adapta la imagen al tamaño de la ventana (tipo cover)."""
+    bg = pygame.image.load(path).convert()
+    img_w, img_h = bg.get_size()
+    target_w, target_h = target_size
+
+    # Escala proporcional para cubrir toda la pantalla
+    scale = max(target_w / img_w, target_h / img_h)
+    new_w = int(img_w * scale)
+    new_h = int(img_h * scale)
+    bg = pygame.transform.scale(bg, (new_w, new_h))
+
+    # Centrar en la ventana
+    x = (target_w - new_w) // 2
+    y = (target_h - new_h) // 2
+
+    return bg, (x, y)
 
 # ---------------- Loop principal ----------------
 def main():

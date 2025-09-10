@@ -303,13 +303,10 @@ def solve_with(alg, start_state):
 
 def main_menu():
     print("\n====== UNBLOCK ME (CLI) ======")
-    print("  1) Elegir algoritmo")
-    print("  2) Resolver (mostrar todo el recorrido)")
-    print("  3) Paso (avanza 1 estado del plan)")
-    print("  4) Auto (reproduce solución automáticamente)")
-    print("  5) Reiniciar")
-    print("  6) Cambiar algoritmo")
-    print("  7) Salir")
+    print("  1) Resolver (mostrar todo el recorrido)")
+    print("  2) Reiniciar")
+    print("  3) salir")
+
 
 def main():
     init_level_meta()
@@ -336,11 +333,9 @@ def main():
             print("Opción inválida.")
             continue
 
-        if op == 1:  # Elegir algoritmo
-            selected = choose_algorithm_cli()
-            solution = None; step_idx = 0
 
-        elif op == 2:  # Resolver y mostrar recorrido completo
+
+        if op == 1:  # Resolver y mostrar recorrido completo
             start_state = blocks_to_state(blocks)
             solution, expansions, elapsed = solve_with(selected, start_state)
             print_status(selected, solution, expansions, elapsed)
@@ -358,49 +353,20 @@ def main():
                     print_board(st)
                     time.sleep(0.35)
                 if is_goal(solution[-1]):
-                    print("\n✅ ¡Meta alcanzada con éxito!\n")
+                    print("\n¡Meta alcanzada con éxito!\n")
 
-        elif op == 3:  # Paso manual
-            if solution is None:
-                print("No hay solución cargada. Ejecuta primero 'Resolver'.")
-            else:
-                # avanzar al siguiente estado real (si existe)
-                if step_idx < len(solution) - 1:
-                    step_idx += 1
-                    apply_state_to_blocks(solution[step_idx], blocks)
-                    print(f"\nPaso {step_idx}/{len(solution)-1}")
-                    print_board(solution[step_idx])
-                else:
-                    print("\nYa estás en el estado final de la solución.")
 
-        elif op == 4:  # Auto
-            if solution is None:
-                print("No hay solución cargada. Ejecuta primero 'Resolver'.")
-            else:
-                print(f"\nReproduciendo solución automática ({selected})...\n")
-                # mostramos desde solution[1]..solution[-1] (movimientos reales)
-                apply_state_to_blocks(solution[0], blocks)
-                print_board(solution[0])
-                for i, st in enumerate(solution[1:], start=1):
-                    apply_state_to_blocks(st, blocks)
-                    print(f"\nMovimiento {i}/{len(solution)-1}")
-                    print_board(st)
-                    time.sleep(0.35)
-                if is_goal(solution[-1]):
-                    print("\n✅ ¡Meta alcanzada con éxito!\n")
-                step_idx = len(solution) - 1
 
-        elif op == 5:  # Reiniciar
+
+        elif op == 2:  # Reiniciar
             blocks = [Block(b.x, b.y, b.length, b.orientation, b.is_red) for b in START_BLOCKS]
             solution = None; step_idx = 0
             print("\nTablero reiniciado.")
 
-        elif op == 6:  # Cambiar algoritmo
-            selected = choose_algorithm_cli()
-            solution = None; step_idx = 0
 
-        elif op == 7:  # Salir
-            print("\n¡Chao! Éxitos con la entrega.")
+
+        elif op == 3:  # Salir
+            print("\nNos vemos pronto amigo!")
             break
 
         else:

@@ -260,7 +260,7 @@ def print_board(state):
         print("  |" + " ".join(row) + "|" + exit_mark)
     print("  +" + "--"*COLS + "+")
     if is_goal(state):
-        print("  ✔ Meta alcanzada: el rojo llegó a la salida.")
+        print("Meta alcanzada: el rojo llegó a la salida.")
 
 def print_status(alg_name, sol, expansions, elapsed):
     if sol is None:

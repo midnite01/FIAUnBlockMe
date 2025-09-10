@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Unblock Me - Versión de Terminal (CLI)
-Algoritmos: A*, BFS, DFS, UCS
-- Costo uniforme: 1 por transición
-- Heurística A*: h = (#bloqueadores + 1) ; 0 si estado meta
-Controles:
-  1) Elegir algoritmo
-  2) Resolver (calcula plan completo y muestra el recorrido hasta la meta)
-  3) Paso (avanza 1 estado del plan)
-  4) Auto (reproduce toda la solución automáticamente)
-  5) Reiniciar
-  6) Cambiar algoritmo
-  7) Salir
+Unblock Me - Versión de Terminal (CLI) - corregido
+Correcciones:
+ - BFS y UCS implementados de forma más robusta.
+ - 'Paso' ahora avanza al siguiente estado real (solution[1]) en la primera invocación,
+   evitando la sensación de "0 movimientos".
+ - 'Auto' y 'Resolver' reproducen movimientos desde solution[1]..solution[-1].
 """
 
 import time
@@ -59,6 +53,7 @@ RED_IDX = 0      # índice del bloque rojo
 def init_level_meta():
     global LEVEL_META, RED_IDX
     LEVEL_META = [(b.length, b.orientation, b.is_red) for b in START_BLOCKS]
+    RED_IDX = 0
     for i, meta in enumerate(LEVEL_META):
         if meta[2]:
             RED_IDX = i
@@ -150,7 +145,7 @@ def reconstruct(parent_map, goal_state):
     path.reverse()
     return path
 
-# ---------------- Algoritmos de búsqueda ----------------
+# ---------------- Algoritmos de búsqueda (revisados) ----------------
 def astar(start_state, max_exp=400000):
     class Node:
         __slots__ = ("state","g","f")
@@ -185,21 +180,21 @@ def astar(start_state, max_exp=400000):
     return None, expansions
 
 def bfs(start_state, max_exp=600000):
+    # BFS robusto: usamos `parent` como registro de visitados (para evitar inconsistencias)
     if is_goal(start_state):
         return [start_state], 0
     Q = deque([start_state])
     parent = {start_state: None}
-    visited = {start_state}
     expansions = 0
     while Q and expansions <= max_exp:
         s = Q.popleft()
         expansions += 1
         for nxt in successors(s):
-            if nxt not in visited:
+            # si no tiene padre aún => no visitado
+            if nxt not in parent:
                 parent[nxt] = s
                 if is_goal(nxt):
                     return reconstruct(parent, nxt), expansions
-                visited.add(nxt)
                 Q.append(nxt)
     return None, expansions
 
@@ -221,6 +216,7 @@ def dfs(start_state, max_exp=600000):
     return None, expansions
 
 def ucs(start_state, max_exp=600000):
+    # UCS canónico: heap por (g, state), mantener best_g y parent
     heap = []
     heappush(heap, (0, start_state))
     best_g = {start_state: 0}
@@ -228,6 +224,7 @@ def ucs(start_state, max_exp=600000):
     expansions = 0
     while heap and expansions <= max_exp:
         g, s = heappop(heap)
+        # ignorar entradas obsoletas
         if g > best_g.get(s, float('inf')):
             continue
         if is_goal(s):
@@ -269,7 +266,7 @@ def print_status(alg_name, sol, expansions, elapsed):
     if sol is None:
         print(f"\n[{alg_name}] Sin solución (expandidos={expansions}, tiempo={elapsed:.3f}s)")
     else:
-        moves = len(sol) - 1
+        moves = max(0, len(sol) - 1)
         print(f"\n[{alg_name}] ¡Solución hallada!")
         print(f"  - Movimientos (transiciones): {moves}")
         print(f"  - Nodos expandidos: {expansions}")
@@ -323,12 +320,14 @@ def main():
     solution = None
     expansions = 0
     elapsed = 0.0
+    # step_idx ahora representa el índice del estado *actual* dentro de solution (si solution existe).
+    # s.i.: si step_idx == 0 => estamos en solution[0] (estado inicial).
     step_idx = 0
 
     while True:
         print_board(blocks_to_state(blocks))
         if solution is not None:
-            print(f"\nSolución precalculada ({selected}): {len(solution)-1} movs. Paso actual: {step_idx}/{len(solution)-1}")
+            print(f"\nSolución precalculada ({selected}): {max(0,len(solution)-1)} movs. Paso actual: {step_idx}/{max(0,len(solution)-1)}")
             print(f"Nodos expandidos: {expansions} | Tiempo: {elapsed:.3f}s")
         main_menu()
         try:
@@ -347,12 +346,17 @@ def main():
             print_status(selected, solution, expansions, elapsed)
             step_idx = 0
             if solution:
+                # mostramos movimientos reales desde solution[1] hasta solution[-1]
                 print(f"\nMostrando solución completa ({len(solution)-1} movimientos):\n")
-                for i, st in enumerate(solution):
+                # aplicar el estado inicial (ya está aplicado normalmente), pero para consistencia:
+                apply_state_to_blocks(solution[0], blocks)
+                print_board(solution[0])
+                for i, st in enumerate(solution[1:], start=1):
                     apply_state_to_blocks(st, blocks)
+                    step_idx = i
                     print(f"\nMovimiento {i}/{len(solution)-1}")
                     print_board(st)
-                    time.sleep(0.5)
+                    time.sleep(0.35)
                 if is_goal(solution[-1]):
                     print("\n✅ ¡Meta alcanzada con éxito!\n")
 
@@ -360,11 +364,12 @@ def main():
             if solution is None:
                 print("No hay solución cargada. Ejecuta primero 'Resolver'.")
             else:
-                if step_idx < len(solution):
+                # avanzar al siguiente estado real (si existe)
+                if step_idx < len(solution) - 1:
+                    step_idx += 1
                     apply_state_to_blocks(solution[step_idx], blocks)
                     print(f"\nPaso {step_idx}/{len(solution)-1}")
                     print_board(solution[step_idx])
-                    step_idx += 1
                 else:
                     print("\nYa estás en el estado final de la solución.")
 
@@ -373,13 +378,17 @@ def main():
                 print("No hay solución cargada. Ejecuta primero 'Resolver'.")
             else:
                 print(f"\nReproduciendo solución automática ({selected})...\n")
-                for i, st in enumerate(solution):
+                # mostramos desde solution[1]..solution[-1] (movimientos reales)
+                apply_state_to_blocks(solution[0], blocks)
+                print_board(solution[0])
+                for i, st in enumerate(solution[1:], start=1):
                     apply_state_to_blocks(st, blocks)
                     print(f"\nMovimiento {i}/{len(solution)-1}")
                     print_board(st)
-                    time.sleep(0.5)
+                    time.sleep(0.35)
                 if is_goal(solution[-1]):
                     print("\n✅ ¡Meta alcanzada con éxito!\n")
+                step_idx = len(solution) - 1
 
         elif op == 5:  # Reiniciar
             blocks = [Block(b.x, b.y, b.length, b.orientation, b.is_red) for b in START_BLOCKS]
@@ -399,3 +408,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

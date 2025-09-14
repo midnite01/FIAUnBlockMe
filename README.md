@@ -80,6 +80,7 @@ Dentro del notebook podrás:
 Los experimentos muestran diferencias claras entre algoritmos no informados y A*.  
 
 ![Resultados](descarga(4).png)
+![Resultados Nivel dificil](output.png)
 
 - **Movimientos**: DFS genera planes muy largos en comparación con A*, BFS y UCS.  
 - **Nodos expandidos**: A* expande significativamente menos que BFS y UCS.  

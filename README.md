@@ -2,7 +2,7 @@
 
 ---
 
-##Integrantes:
+## Integrantes:
 
 -Sergio Villegas Osores integrante 1 (8061)
 

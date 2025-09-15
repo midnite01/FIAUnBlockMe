@@ -4,6 +4,7 @@
 
 ##Integrantes:
 -Sergio Villegas Osores integrante 1 (8061)
+
 -Elías Pérez Uribe integrante 2 (8061)
 
 ---

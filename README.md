@@ -1,5 +1,13 @@
 # Proyecto: Fundamentos de Inteligencia Artificial – Comparación de Algoritmos en *Unblock Me*
 
+---
+
+##Integrantes:
+-Sergio Villegas Osores integrante 1 (8061)
+-Elías Pérez Uribe integrante 2 (8061)
+
+---
+
 ## Descripción General
 Este proyecto fue desarrollado en el marco del curso de **Fundamentos de Inteligencia Artificial** y tiene como objetivo aplicar y comparar algoritmos de búsqueda **no informados** (BFS, DFS y UCS) contra un algoritmo **informado** (A*) en el contexto del juego de rompecabezas **Unblock Me**.
 
@@ -33,6 +41,26 @@ Implementa el juego en consola (CLI) e incluye:
   - Nodos expandidos.
   - Tiempo de ejecución.
   - Número de movimientos hasta la meta.
+
+---
+## Heuristica implementada 
+
+En el contexto de inteligencia artificial, una **heurística** es una función que entrega una **estimación numérica** del costo o pasos que faltan desde un estado actual hasta alcanzar el objetivo. Su propósito es **guiar la búsqueda** hacia la meta de manera más eficiente, reduciendo el número de nodos explorados. Una heurística es **admisible** si nunca sobreestima el costo real, lo que garantiza que el algoritmo encuentre una solución óptima.
+
+-BFS (Breadth First Search):
+No utiliza heurística. Expande los estados por capas desde el inicial, garantizando encontrar la solución con el menor número de movimientos, pero sin estimar cuán cerca está de la meta.
+
+-DFS (Depth First Search):
+No emplea heurística. Explora primero en profundidad un camino antes de retroceder, lo que puede llevar a soluciones no óptimas y a un mayor número de expansiones, ya que no tiene una estimación que lo guíe hacia la meta.
+
+-UCS (Uniform Cost Search):
+No usa heurística, pero prioriza los nodos por el costo acumulado g(n). En este caso, cada movimiento vale 1, por lo que UCS siempre encuentra la solución óptima en cuanto a cantidad de movimientos, aunque sin ninguna estimación adicional.
+
+-A* (A estrella):
+Combina el costo acumulado g(n) con una heurística h(n). La heurística se definió como el número de bloques que bloquean directamente la salida del bloque rojo más un movimiento adicional del rojo. Esta función es admisible porque nunca sobreestima el costo real, lo que permite que A* encuentre soluciones óptimas y, al mismo tiempo, reduzca el número de nodos expandidos al guiar la búsqueda hacia la meta de forma más eficiente.
+
+---
+
 
 ### `UnblockMe_experiments.ipynb`
 Notebook en Jupyter utilizado para:

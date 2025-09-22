@@ -38,7 +38,7 @@ Ejemplo: si el bloque rojo está a 3 casillas de la salida y hay 2 bloques bloqu
 h(n)=2+1=3.Esta heurística nunca sobreestima el costo real (es admisible), lo que garantiza que A* encuentre siempre soluciones óptimas en cuanto a cantidad de movimientos. 
 Al mismo tiempo, le da una “guía” al algoritmo, que prioriza expandir primero los estados más prometedores según f(n)=g(n)+h(n). Gracias a esto, en la práctica expande menos nodos que BFS.
 
-
+# Los resultados son aleatorios, sin embargo cumple con su objetivo de comparación entre A* y BFS 
 #Estados nivel fácil (6x6)
 Estado inicial 1:
 N° nodos revisados A*:1
@@ -75,7 +75,7 @@ N° nodos revisados A*:5
 N° nodos revisados BFS:129
 
 Estado inicial 4:
-N° nodos revisados A*:6
+N° nodos revisados A*:8
 N° nodos revisados BFS:884
 
 
@@ -89,18 +89,17 @@ N° nodos revisados A*:2
 N° nodos revisados BFS:400001 (sin solución)
 
 Estado inicial 3:
-N° nodos revisados A*:3
+N° nodos revisados A*:23
 N° nodos revisados BFS:400001 (sin solución)
 
 Estado inicial 4:
-N° nodos revisados A*:4
+N° nodos revisados A*:24
 N° nodos revisados BFS:400001 (sin solución)
 
 Estado inicial 5
-N° nodos revisados A*:5
+N° nodos revisados A*:25
 N° nodos revisados BFS:400001 (sin solución)
+(recalcar que para llegar al resultado de nodos en BFS con el nivel difícil, las pruebas varían
+de 30 minutos, 1 hora áproximadamente)
 
-Estado inicial 6:
-N° nodos revisados A*:6
-N° nodos revisados BFS:400001 (sin solución)
-
+---

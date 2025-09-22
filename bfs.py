@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Unblock Me - Menú con 3 niveles fijos (6x6, 8x8, 20x20) y BFS
-- Niveles fijos (no aleatorios):
-    - Fácil  : 6x6  (nivel clásico que ya tenías)
-    - Medio  : 8x8  (tu nivel medio anterior)
-    - Difícil: 20x20 (nuevo, diseñado; ningún bloque horizontal justo delante del rojo)
-- Muestra estado inicial, nodos expandidos por BFS y pasos (coordenadas + tablero + nodos visitados).
 """
 
 import time
+import random
 from collections import deque
 
 # ---------------- CONFIG DEL PROBLEMA ----------------
 ROWS, COLS = 6, 6   # por defecto (se ajusta al elegir nivel)
+RANDOM_PRIORITY_RATE = 0.4  # Probabilidad de priorizar el bloque rojo
 
 
 class Block:
@@ -146,15 +143,27 @@ def is_goal(state):
 def successors(state):
     succs = []
     grid = build_grid(state)
-    for i, (x, y) in enumerate(state):
+    
+    # Priorizar el bloque rojo con cierta probabilidad
+    indices = list(range(len(state)))
+    if random.random() < RANDOM_PRIORITY_RATE:
+        if RED_IDX in indices:
+            indices.remove(RED_IDX)
+            indices.insert(0, RED_IDX)
+    
+    for i in indices:
+        x, y = state[i]
         length, orient, _ = LEVEL_META[i]
         if orient == 'H':
+            # Movimiento hacia izquierda
             step = 1
             while x - step >= 0 and grid[y][x - step] == -1:
                 new = list(state)
                 new[i] = (x - step, y)
                 succs.append(tuple(new))
                 step += 1
+            
+            # Movimiento hacia derecha
             step = 1
             right_end = x + length - 1
             while right_end + step <= COLS - 1 and grid[y][right_end + step] == -1:
@@ -163,12 +172,15 @@ def successors(state):
                 succs.append(tuple(new))
                 step += 1
         else:
+            # Movimiento hacia arriba
             step = 1
             while y - step >= 0 and grid[y - step][x] == -1:
                 new = list(state)
                 new[i] = (x, y - step)
                 succs.append(tuple(new))
                 step += 1
+            
+            # Movimiento hacia abajo
             step = 1
             bottom_end = y + length - 1
             while bottom_end + step <= ROWS - 1 and grid[bottom_end + step][x] == -1:
@@ -176,6 +188,9 @@ def successors(state):
                 new[i] = (x, y + step)
                 succs.append(tuple(new))
                 step += 1
+    
+    # Mezclar aleatoriamente los sucesores para exploración diversa
+    random.shuffle(succs)
     return succs
 
 
@@ -188,7 +203,6 @@ def reconstruct(parent_map, goal_state):
     path.reverse()
     return path
 
-# ---------------- SOLO BFS ----------------
 
 def bfs(start_state, max_exp=400000):
     queue = deque([start_state])
@@ -198,19 +212,26 @@ def bfs(start_state, max_exp=400000):
     expanded_at = {}
 
     while queue and expansions <= max_exp:
+        # Ocasionalmente mezclar la cola para exploración aleatoria
+        if random.random() < 0.1 and len(queue) > 1:
+            temp_list = list(queue)
+            random.shuffle(temp_list)
+            queue = deque(temp_list)
+        
         s = queue.popleft()
         expansions += 1
         expanded_at[s] = expansions
+        
         if is_goal(s):
             return reconstruct(parent, s), expansions, expanded_at
+        
         for nxt in successors(s):
             if nxt not in visited:
                 visited.add(nxt)
                 parent[nxt] = s
                 queue.append(nxt)
+    
     return None, expansions, expanded_at
-
-# ---------------- Impresión en terminal ----------------
 
 
 def print_board(state, show_exit=True):
@@ -252,6 +273,7 @@ def print_status(sol, expansions, elapsed):
         print(f"  - Movimientos (transiciones): {moves}")
         print(f"  - Nodos expandidos: {expansions}")
         print(f"  - Tiempo: {elapsed:.3f} s")
+        print(f"  - Prioridad del rojo: {RANDOM_PRIORITY_RATE*100}%")
 
 
 def solve_with_bfs(start_state):
@@ -271,6 +293,8 @@ def main():
     # Mostrar estado inicial
     print("\n=== Estado inicial ===")
     print("Coordenadas iniciales:", start_state)
+    print("Configuración aleatoria:")
+    print(f"  - Prioridad del bloque rojo: {RANDOM_PRIORITY_RATE*100}%")
     print_board(start_state)
 
     solution, expansions, elapsed, expanded_at = solve_with_bfs(start_state)
@@ -281,8 +305,11 @@ def main():
         for step_idx, st in enumerate(solution):
             apply_state_to_blocks(st, blocks)
             nodes_visited = expanded_at.get(st, 0)
-            print(f"  Nodos visitados hasta este paso: {nodes_visited}")
+            print(f"Paso {step_idx}: Nodos visitados = {nodes_visited}")
+            print(f"Coordenadas: {st}")
             print_board(st)
+            if step_idx < len(solution) - 1:
+                print("--- Movimiento ---")
         if is_goal(solution[-1]):
             print("\n¡Meta alcanzada con éxito!\n")
 

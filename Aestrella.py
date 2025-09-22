@@ -330,8 +330,7 @@ def print_status(sol, expansions, elapsed):
         print(f"  - Movimientos (transiciones): {moves}")
         print(f"  - Nodos expandidos: {expansions}")
         print(f"  - Tiempo: {elapsed:.3f} s")
-        print(f"  - Tasa de exploración: {EXPLORATION_RATE*100}%")
-        print(f"  - Aleatoriedad en heurística: ±{RANDOM_HEURISTIC}")
+
 
 
 def solve_with_astar(start_state):
